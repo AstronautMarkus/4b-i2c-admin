@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="pcb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1f8a4c"/>
+      <stop offset="100%" stop-color="#146536"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d3f26a"/>
+      <stop offset="100%" stop-color="#b8db4e"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="420" fill="#0d1117"/>
+
+  <!-- ===================== RASPBERRY PI BOARD ===================== -->
+  <g>
+    <rect x="30" y="90" width="300" height="230" rx="14" fill="url(#pcb)" stroke="#0b4023" stroke-width="2"/>
+    <text x="180" y="330" text-anchor="middle" fill="#eafff0" font-size="14" font-weight="bold">Raspberry Pi 4B</text>
+
+    <!-- mounting holes -->
+    <circle cx="48" cy="108" r="5" fill="#0b4023"/>
+    <circle cx="312" cy="108" r="5" fill="#0b4023"/>
+    <circle cx="48" cy="302" r="5" fill="#0b4023"/>
+
+    <!-- USB / Ethernet block -->
+    <rect x="45" y="230" width="70" height="45" fill="#c9c9c9" rx="3"/>
+    <rect x="45" y="280" width="90" height="30" fill="#e8e8e8" rx="3"/>
+    <text x="90" y="325" text-anchor="middle" fill="#eafff0" font-size="9">USB / ETH</text>
+
+    <!-- HDMI -->
+    <rect x="45" y="150" width="50" height="16" fill="#3a3a3a" rx="2"/>
+    <text x="70" y="145" text-anchor="middle" fill="#eafff0" font-size="8">HDMI</text>
+
+    <!-- SoC -->
+    <rect x="150" y="170" width="60" height="60" fill="#111" rx="4"/>
+
+    <!-- GPIO header -->
+    <g>
+      <rect x="238" y="98" width="26" height="180" fill="#111" rx="2"/>
+      <text x="251" y="92" text-anchor="middle" fill="#eafff0" font-size="9" font-weight="bold">GPIO</text>
+      <!-- 20 pin rows (2 columns x 10 visible) -->
+      <g fill="#d4af37">
+        <!-- left column -->
+        <rect x="242" y="102" width="6" height="6"/>
+        <rect x="242" y="120" width="6" height="6"/>
+        <rect x="242" y="138" width="6" height="6"/>
+        <rect x="242" y="156" width="6" height="6"/>
+        <rect x="242" y="174" width="6" height="6"/>
+        <rect x="242" y="192" width="6" height="6"/>
+        <rect x="242" y="210" width="6" height="6"/>
+        <rect x="242" y="228" width="6" height="6"/>
+        <rect x="242" y="246" width="6" height="6"/>
+        <rect x="242" y="264" width="6" height="6"/>
+        <!-- right column -->
+        <rect x="254" y="102" width="6" height="6"/>
+        <rect x="254" y="120" width="6" height="6"/>
+        <rect x="254" y="138" width="6" height="6"/>
+        <rect x="254" y="156" width="6" height="6"/>
+        <rect x="254" y="174" width="6" height="6"/>
+        <rect x="254" y="192" width="6" height="6"/>
+        <rect x="254" y="210" width="6" height="6"/>
+        <rect x="254" y="228" width="6" height="6"/>
+        <rect x="254" y="246" width="6" height="6"/>
+        <rect x="254" y="264" width="6" height="6"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===================== LCD 16x2 I2C MODULE ===================== -->
+  <g>
+    <rect x="560" y="40" width="310" height="170" rx="10" fill="url(#pcb)" stroke="#0b4023" stroke-width="2"/>
+    <rect x="580" y="58" width="270" height="95" fill="url(#screen)" stroke="#7a9c2e" stroke-width="2"/>
+    <!-- grid lines to suggest 16x2 characters -->
+    <g stroke="#9db94f" stroke-width="0.6">
+      <line x1="580" y1="105" x2="850" y2="105"/>
+      <line x1="597" y1="58" x2="597" y2="153"/>
+      <line x1="614" y1="58" x2="614" y2="153"/>
+      <line x1="631" y1="58" x2="631" y2="153"/>
+      <line x1="648" y1="58" x2="648" y2="153"/>
+      <line x1="665" y1="58" x2="665" y2="153"/>
+      <line x1="682" y1="58" x2="682" y2="153"/>
+      <line x1="699" y1="58" x2="699" y2="153"/>
+      <line x1="716" y1="58" x2="716" y2="153"/>
+      <line x1="733" y1="58" x2="733" y2="153"/>
+      <line x1="750" y1="58" x2="750" y2="153"/>
+      <line x1="767" y1="58" x2="767" y2="153"/>
+      <line x1="784" y1="58" x2="784" y2="153"/>
+      <line x1="801" y1="58" x2="801" y2="153"/>
+      <line x1="818" y1="58" x2="818" y2="153"/>
+      <line x1="835" y1="58" x2="835" y2="153"/>
+    </g>
+    <text x="715" y="83" text-anchor="middle" fill="#2c3d0f" font-size="13" font-family="monospace">ASTRONAUTMARKUS</text>
+    <text x="715" y="132" text-anchor="middle" fill="#2c3d0f" font-size="13" font-family="monospace">RASPBERRY PI :D</text>
+
+    <!-- I2C backpack (PCF8574) -->
+    <rect x="580" y="163" width="270" height="30" fill="#0b4023" stroke="#08300f"/>
+    <text x="715" y="183" text-anchor="middle" fill="#eafff0" font-size="10">Backpack I2C (PCF8574) · Addr 0x27</text>
+
+    <!-- 4-pin connector on the backpack -->
+    <g fill="#d4af37">
+      <rect x="592" y="193" width="6" height="10"/>
+      <rect x="606" y="193" width="6" height="10"/>
+      <rect x="620" y="193" width="6" height="10"/>
+      <rect x="634" y="193" width="6" height="10"/>
+    </g>
+    <text x="595" y="218" font-size="9" fill="#eafff0">GND</text>
+    <text x="606" y="218" font-size="9" fill="#eafff0">5V</text>
+    <text x="620" y="218" font-size="9" fill="#eafff0">SDA</text>
+    <text x="633" y="218" font-size="9" fill="#eafff0">SCL</text>
+  </g>
+
+  <!-- ===================== WIRES ===================== -->
+  <!-- GND: pin 6 (left col, 3rd row -> y=138) -->
+  <path d="M245,141 C 420,141 420,198 595,198" fill="none" stroke="#f2c40c" stroke-width="3"/>
+  <!-- 5V: pin 2 (right col, 1st row -> y=105) -->
+  <path d="M257,105 C 430,105 430,198 609,198" fill="none" stroke="#e0342e" stroke-width="3"/>
+  <!-- SDA: pin 3 (left col, 2nd row -> y=123) -->
+  <path d="M245,123 C 440,123 440,198 623,198" fill="none" stroke="#2ea043" stroke-width="3"/>
+  <!-- SCL: pin 5 (left col, 3rd row above gnd -> y=... use y=141 taken, use right col row2 y=123 alt) -->
+  <path d="M257,123 C 450,60 450,198 637,198" fill="none" stroke="#3399ff" stroke-width="3"/>
+
+  <!-- legend -->
+  <g font-size="12" fill="#eafff0">
+    <rect x="30" y="345" width="14" height="10" fill="#f2c40c"/>
+    <text x="50" y="354">GND  — Pin 6</text>
+
+    <rect x="180" y="345" width="14" height="10" fill="#e0342e"/>
+    <text x="200" y="354">5V   — Pin 2</text>
+
+    <rect x="330" y="345" width="14" height="10" fill="#2ea043"/>
+    <text x="350" y="354">SDA  — Pin 3 (GPIO2)</text>
+
+    <rect x="540" y="345" width="14" height="10" fill="#3399ff"/>
+    <text x="560" y="354">SCL  — Pin 5 (GPIO3)</text>
+  </g>
+
+  <text x="450" y="400" text-anchor="middle" fill="#8b949e" font-size="11">
+    Diagrama esquematico de referencia — no a escala
+  </text>
+</svg>
