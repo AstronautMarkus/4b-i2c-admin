@@ -1,0 +1,9 @@
+{
+    "title": "Reloj",
+    "description": "Fecha y hora en vivo, actualizada cada segundo.",
+    "version": "1.0.0",
+    "author": "AstronautMarkus",
+    "icon": "🕐",
+    "tick_seconds": 1,
+    "requires_internet": false
+}

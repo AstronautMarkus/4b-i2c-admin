@@ -107,29 +107,39 @@ lcd_message("Hello world", LCD_LINE_1)
 lcd_message("From Python", LCD_LINE_2)
 ```
 
-### Dashboard (HTTP + hardware + weather)
+### Dashboard (módulos configurables + servidor web)
 
 ```bash
-python3 dashboard.py
+pip3 install -r requirements.txt
+python3 scripts/seed_demo_playlist.py   # primera vez: publica una playlist de ejemplo
+python3 app.py
 ```
 
-[dashboard.py](dashboard.py) rotates automatically between several screens, each with its own loading indicator while it resolves the underlying query.
+[app.py](app.py) arranca el servidor web (puerto `6767`) y, en un hilo de fondo, el bucle que rota el LCD según la playlist activa guardada en SQLite (`data/dashboard.sqlite3`). Cada pantalla es un módulo independiente en [modules/](modules/), autodescubierto al arrancar:
 
-| Screen | Data source | Live? |
+| Módulo | Fuente de datos | ¿En vivo? |
 |---|---|---|
-| Clock / date | local `datetime` | Yes, rewritten every second (`TICK_SECONDS`) |
-| Network | hostname + real private IP (see note below) | No, static within the window |
-| Hardware | CPU %, RAM %, disk % (`psutil`) + CPU temperature (`lm-sensors`, `sensors -u`) | Yes, re-read every second |
-| Weather | IP-based geolocation ([ipwho.is](https://ipwho.is), no API key) + current weather ([Open-Meteo](https://open-meteo.com), no API key) | Cached, refreshed every `WEATHER_REFRESH_EVERY` cycles |
-| Chile holidays | [boostr.cl](https://boostr.cl/feriados) — celebrates with an animation if today is a holiday; otherwise shows the next one and the days remaining | Queried once per year (cached in `state["holidays_year"]`) |
+| `clock` | `datetime` local | Sí, se reescribe cada segundo |
+| `network` | hostname + IP privada real (ver nota abajo) | No, estático mientras se muestra |
+| `hardware` | CPU %, RAM %, disco % (`psutil`) + temperatura (`lm-sensors`, `sensors -u`) | Sí, cada segundo |
+| `weather` | Geolocalización por IP ([ipwho.is](https://ipwho.is)) + clima actual ([Open-Meteo](https://open-meteo.com)), sin API key | Cacheado (15 min) |
+| `holidays` | Feriados de Chile ([boostr.cl](https://boostr.cl/feriados)) — celebra con una animación si hoy es feriado, si no muestra el próximo y los días restantes | Cacheado por año |
 
-Designed as an extensible base: adding a new screen just requires a new name in `SCREENS` and a `screen_xxx()` function.
+Si no hay internet, los módulos que lo requieren muestran un aviso en vez de romper el loop.
 
-> If there is no internet connection, the network/weather/holidays screens show a notice instead of breaking the loop.
+Si no hay una playlist publicada, el LCD queda en "Esperando config" mostrando la IP y el puerto para configurar desde el navegador (la interfaz web para armar la playlist llega en la próxima fase — por ahora se publica con `scripts/seed_demo_playlist.py`).
+
+Para desarrollar sin el hardware I2C real (por ejemplo en macOS), fuerza el backend de consola:
+
+```bash
+LCD_BACKEND=console python3 app.py
+```
+
+**Escalar con un módulo nuevo:** crear `modules/<slug>/manifest.json` (con al menos `title` y `tick_seconds`) y `modules/<slug>/module.py` con una clase `Module` que herede de `core.module_base.BaseModule` e implemente `tick(ctx)`. El escaneo al arrancar lo detecta solo.
 
 **Private IP:** `socket.gethostbyname(hostname)` on Raspbian almost always returns `127.0.1.1` (due to the default `/etc/hosts` configuration), so `get_local_ip()` instead uses a UDP socket trick "towards" `8.8.8.8` — it sends no data, it just forces the system to pick the real network interface and reads that IP.
 
-**Chile holidays:** `get_holidays(year)` queries `https://api.boostr.cl/holidays/{year}.json` (free, no API key, maintained by [boostr.cl](https://boostr.cl/feriados)). The result is cached per year in `state["holidays"]` and only refetched when the year changes (in case the dashboard keeps running from December 31st into January 1st). When today's date matches a holiday, `celebrate_holiday()` triggers an animation: line 1 flashes between `****...` and "HOLIDAY TODAY!", and line 2 scrolls the holiday name flanked by a custom star character (CGRAM, loaded once at startup in `main()`). Otherwise, the next holiday is shown with a countdown in days.
+**Chile holidays:** `get_holidays(year)` queries `https://api.boostr.cl/holidays/{year}.json` (free, no API key, maintained by [boostr.cl](https://boostr.cl/feriados)). When today's date matches a holiday, the animation flashes line 1 between `****...` and "HOLIDAY TODAY!", and scrolls the holiday name on line 2 flanked by a custom star character (CGRAM, loaded once via the module's `setup()`). Otherwise, the next holiday is shown with a countdown in days.
 
 ---
 
@@ -137,8 +147,12 @@ Designed as an extensible base: adding a new screen just requires a new name in 
 
 ```
 4b-i2c-admin/
-├── lcd_i2c.py              # Core driver (init, write, clear)
-├── dashboard.py            # Dashboard: HTTP APIs, hardware (lm-sensors), weather
+├── lcd_i2c.py              # Driver de bajo nivel del LCD (init, write, clear)
+├── app.py                  # Entry point: SQLite + loop del LCD (hilo) + servidor web (puerto 6767)
+├── core/                   # Núcleo: db, contrato de módulo, scanner, loop
+├── modules/                # Módulos autodescubiertos (clock, network, hardware, weather, holidays)
+├── scripts/                # Utilidades (seed_demo_playlist.py)
+├── data/                   # SQLite en runtime (gitignored)
 ├── requirements.txt        # Python dependencies
 ├── docs/
 │   └── wiring-diagram.svg  # Wiring diagram

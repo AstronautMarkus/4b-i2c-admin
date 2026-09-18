@@ -1,0 +1,9 @@
+{
+    "title": "Feriados Chile",
+    "description": "Celebra si hoy es feriado en Chile; si no, muestra el próximo y cuántos días faltan.",
+    "version": "1.0.0",
+    "author": "AstronautMarkus",
+    "icon": "🎉",
+    "tick_seconds": 3600,
+    "requires_internet": true
+}

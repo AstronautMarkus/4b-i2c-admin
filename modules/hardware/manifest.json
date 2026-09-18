@@ -1,0 +1,9 @@
+{
+    "title": "Hardware",
+    "description": "CPU %, RAM %, disco % y temperatura, en vivo.",
+    "version": "1.0.0",
+    "author": "AstronautMarkus",
+    "icon": "🖥",
+    "tick_seconds": 1,
+    "requires_internet": false
+}

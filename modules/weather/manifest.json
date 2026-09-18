@@ -1,0 +1,9 @@
+{
+    "title": "Clima",
+    "description": "Geolocalización por IP + clima actual (Open-Meteo).",
+    "version": "1.0.0",
+    "author": "AstronautMarkus",
+    "icon": "⛅",
+    "tick_seconds": 5,
+    "requires_internet": true
+}

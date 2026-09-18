@@ -1,0 +1,9 @@
+{
+    "title": "Red",
+    "description": "Hostname e IP privada real de la interfaz activa.",
+    "version": "1.0.0",
+    "author": "AstronautMarkus",
+    "icon": "🌐",
+    "tick_seconds": 5,
+    "requires_internet": false
+}
