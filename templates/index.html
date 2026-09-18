@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Estado — 4B I2C Admin{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="status-row">
+        <span class="badge badge-{{ 'running' if status.state == 'running' else 'waiting' }}">
+            {{ 'Corriendo' if status.state == 'running' else 'Esperando configuración' }}
+        </span>
+        <span class="muted">IP: {{ status.ip or '—' }}:6767</span>
+    </div>
+
+    {% if status.state == 'running' %}
+        <p>Mostrando ahora: <strong>{{ status.current_module or '—' }}</strong></p>
+    {% else %}
+        <p class="muted">No hay una playlist publicada. Andá a <a href="{{ url_for('web.playlist_editor') }}">Playlist</a> para configurar qué mostrar.</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Playlist activa</h2>
+    {% if playlist %}
+        <table class="table">
+            <thead>
+                <tr><th>#</th><th>Módulo</th><th>Duración</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+                {% for entry in playlist %}
+                <tr class="{{ 'current' if entry.module_id == status.current_module }}">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ entry.icon }} {{ entry.title }}</td>
+                    <td>{{ entry.duration_seconds }}s</td>
+                    <td>{% if not entry.is_valid %}<span class="badge badge-error">inválido</span>{% else %}ok{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Playlist vacía.</p>
+    {% endif %}
+</section>
+
+<section class="card danger-zone">
+    <h2>Reset de fábrica</h2>
+    <p class="muted">Borra la playlist publicada y vuelve al estado "esperando configuración". El catálogo de módulos descubiertos no se toca.</p>
+    <form method="post" action="{{ url_for('web.factory_reset') }}" data-confirm="¿Seguro que querés borrar la configuración actual?">
+        <button type="submit" class="btn btn-danger">Restaurar configuración de fábrica</button>
+    </form>
+</section>
+{% endblock %}

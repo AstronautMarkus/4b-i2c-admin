@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Playlist — 4B I2C Admin{% endblock %}
+
+{% block content %}
+<form id="playlist-form" method="post" action="{{ url_for('web.playlist_publish') }}">
+    <section class="card">
+        <h2>Secuencia a mostrar</h2>
+        <p class="muted">Orden libre, duración libre por entrada, y un módulo puede repetirse varias veces.</p>
+
+        <ol id="playlist-rows" class="playlist-rows">
+            {% for entry in playlist %}
+            <li class="playlist-row" data-module-id="{{ entry.module_id }}">
+                <span class="row-icon">{{ entry.icon }}</span>
+                <span class="row-title">{{ entry.title }}</span>
+                <input type="hidden" name="module_id" value="{{ entry.module_id }}">
+                <label class="row-duration">
+                    <input type="number" name="duration_seconds" min="1" value="{{ entry.duration_seconds }}" required> s
+                </label>
+                <span class="row-actions">
+                    <button type="button" class="btn-icon" data-action="up" title="Subir">↑</button>
+                    <button type="button" class="btn-icon" data-action="down" title="Bajar">↓</button>
+                    <button type="button" class="btn-icon" data-action="remove" title="Quitar">✕</button>
+                </span>
+            </li>
+            {% endfor %}
+        </ol>
+        <p class="muted" id="empty-hint" {{ 'hidden' if playlist }}>Todavía no agregaste ningún módulo. Elegí uno de la librería de abajo.</p>
+
+        <button type="submit" class="btn btn-primary">Publicar playlist</button>
+    </section>
+</form>
+
+<section class="card">
+    <h2>Librería de módulos</h2>
+    <div class="module-grid">
+        {% for m in modules %}
+            {% if m.is_valid %}
+            <div class="module-card">
+                <div class="module-card-title">{{ m.icon }} {{ m.title }}</div>
+                <p class="muted">{{ m.description or '' }}</p>
+                <button type="button" class="btn add-module-btn"
+                        data-module-id="{{ m.id }}"
+                        data-title="{{ m.title }}"
+                        data-icon="{{ m.icon }}"
+                        data-default-duration="5">
+                    + Agregar
+                </button>
+            </div>
+            {% endif %}
+        {% else %}
+            <p class="muted">No hay módulos descubiertos todavía.</p>
+        {% endfor %}
+    </div>
+    {% if modules and not modules|selectattr('is_valid')|list %}
+        <p class="muted">Ningún módulo válido por ahora — revisá <a href="{{ url_for('web.modules_list') }}">Módulos</a>.</p>
+    {% endif %}
+</section>
+{% endblock %}

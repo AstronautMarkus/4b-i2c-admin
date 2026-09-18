@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}4B I2C Admin{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('web.index') }}">4B I2C Admin</a>
+        <nav>
+            <a href="{{ url_for('web.index') }}" class="{{ 'active' if request.endpoint == 'web.index' }}">Estado</a>
+            <a href="{{ url_for('web.modules_list') }}" class="{{ 'active' if request.endpoint == 'web.modules_list' }}">Módulos</a>
+            <a href="{{ url_for('web.playlist_editor') }}" class="{{ 'active' if request.endpoint == 'web.playlist_editor' }}">Playlist</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="flash flash-{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -8,6 +8,7 @@ Uso:
 """
 
 import logging
+import secrets
 import threading
 
 from flask import Flask, jsonify
@@ -15,10 +16,13 @@ from flask import Flask, jsonify
 from core import db
 from core.config import WEB_HOST, WEB_PORT
 from core.lcd_loop import get_status, run_loop
+from web.routes import bp as web_bp
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 
 app = Flask(__name__)
+app.secret_key = secrets.token_hex(32)  # solo firma la cookie de flash; se regenera en cada arranque
+app.register_blueprint(web_bp)
 stop_event = threading.Event()
 
 
