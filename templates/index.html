@@ -1,50 +1,127 @@
 {% extends "base.html" %}
 {% block title %}Estado — 4B I2C Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<section class="card">
-    <div class="status-row">
-        <span class="badge badge-{{ 'running' if status.state == 'running' else 'waiting' }}">
-            {{ 'Corriendo' if status.state == 'running' else 'Esperando configuración' }}
-        </span>
-        <span class="muted">IP: {{ status.ip or '—' }}:6767</span>
+<div class="row g-3 mb-1">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-blue">
+            <div class="stat-icon"><i class="bi bi-power"></i></div>
+            <div>
+                <div class="stat-value">{{ 'ON' if nav_status.state == 'running' else 'ESPERA' }}</div>
+                <div class="stat-label">Estado del sistema</div>
+            </div>
+        </div>
     </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-aqua">
+            <div class="stat-icon"><i class="bi bi-list-ol"></i></div>
+            <div>
+                <div class="stat-value">{{ playlist|length }}</div>
+                <div class="stat-label">Entradas en playlist</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-orange">
+            <div class="stat-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+            <div>
+                <div class="stat-value">{{ modules|length }}</div>
+                <div class="stat-label">Módulos catalogados</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-card-red">
+            <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+            <div>
+                <div class="stat-value">{{ invalid_count }}</div>
+                <div class="stat-label">Módulos inválidos</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    {% if status.state == 'running' %}
-        <p>Mostrando ahora: <strong>{{ status.current_module or '—' }}</strong></p>
+<div class="panel mt-3">
+    {% if nav_status.state == 'running' %}
+        <p class="mb-0">Mostrando ahora: <strong>{{ nav_status.current_module or '—' }}</strong></p>
     {% else %}
-        <p class="muted">No hay una playlist publicada. Andá a <a href="{{ url_for('web.playlist_editor') }}">Playlist</a> para configurar qué mostrar.</p>
+        <p class="mb-0 panel-muted">No hay una playlist publicada. Andá a <a href="{{ url_for('web.playlist_editor') }}">Playlist</a> para configurar qué mostrar.</p>
     {% endif %}
-</section>
+</div>
 
-<section class="card">
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Tiempo por módulo</h2>
+            {% if duration_chart %}
+                <div class="chart-wrap"><canvas id="chart-duration"></canvas></div>
+                <div class="chart-legend" id="legend-duration"></div>
+            {% else %}
+                <p class="panel-muted mb-0">Playlist vacía — no hay nada que graficar.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Catálogo de módulos</h2>
+            {% if modules %}
+                <div class="chart-wrap"><canvas id="chart-validity"></canvas></div>
+                <div class="chart-legend" id="legend-validity"></div>
+            {% else %}
+                <p class="panel-muted mb-0">Todavía no se escaneó ningún módulo.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="panel">
     <h2>Playlist activa</h2>
     {% if playlist %}
-        <table class="table">
-            <thead>
-                <tr><th>#</th><th>Módulo</th><th>Duración</th><th>Estado</th></tr>
-            </thead>
-            <tbody>
-                {% for entry in playlist %}
-                <tr class="{{ 'current' if entry.module_id == status.current_module }}">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ entry.icon }} {{ entry.title }}</td>
-                    <td>{{ entry.duration_seconds }}s</td>
-                    <td>{% if not entry.is_valid %}<span class="badge badge-error">inválido</span>{% else %}ok{% endif %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr><th>#</th><th>Módulo</th><th>Duración</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    {% for entry in playlist %}
+                    <tr class="{{ 'table-primary' if entry.module_id == nav_status.current_module }}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ entry.icon }} {{ entry.title }}</td>
+                        <td>{{ entry.duration_seconds }}s</td>
+                        <td>
+                            {% if not entry.is_valid %}
+                                <span class="badge text-bg-danger">inválido</span>
+                            {% else %}
+                                <span class="badge text-bg-success">ok</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p class="muted">Playlist vacía.</p>
+        <p class="panel-muted mb-0">Playlist vacía.</p>
     {% endif %}
-</section>
+</div>
 
-<section class="card danger-zone">
+<div class="panel">
     <h2>Reset de fábrica</h2>
-    <p class="muted">Borra la playlist publicada y vuelve al estado "esperando configuración". El catálogo de módulos descubiertos no se toca.</p>
+    <p class="panel-muted">Borra la playlist publicada y vuelve al estado "esperando configuración". El catálogo de módulos descubiertos no se toca.</p>
     <form method="post" action="{{ url_for('web.factory_reset') }}" data-confirm="¿Seguro que querés borrar la configuración actual?">
-        <button type="submit" class="btn btn-danger">Restaurar configuración de fábrica</button>
+        <button type="submit" class="btn btn-outline-danger">
+            <i class="bi bi-arrow-counterclockwise"></i> Restaurar configuración de fábrica
+        </button>
     </form>
-</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.DASHBOARD_CHARTS = {
+        duration: {{ duration_chart|tojson }},
+        validity: {{ validity_chart|tojson }}
+    };
+</script>
 {% endblock %}

@@ -38,7 +38,7 @@ def main():
     loop_thread.start()
 
     try:
-        app.run(host=WEB_HOST, port=WEB_PORT, use_reloader=False)
+        app.run(host=WEB_HOST, port=WEB_PORT, use_reloader=False, threaded=True)
     except KeyboardInterrupt:
         pass
     finally:

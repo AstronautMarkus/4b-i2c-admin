@@ -1,45 +1,54 @@
 {% extends "base.html" %}
 {% block title %}Módulos — 4B I2C Admin{% endblock %}
+{% block page_title %}Módulos{% endblock %}
 
 {% block content %}
-<section class="card">
-    <div class="section-header">
-        <h2>Módulos descubiertos</h2>
+<div class="panel">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Módulos descubiertos</h2>
         <form method="post" action="{{ url_for('web.modules_rescan') }}">
-            <button type="submit" class="btn">Re-escanear</button>
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-arrow-repeat"></i> Re-escanear
+            </button>
         </form>
     </div>
 
     {% if modules %}
-        <table class="table">
-            <thead>
-                <tr><th>Módulo</th><th>Descripción</th><th>Tick</th><th>Internet</th><th>Estado</th></tr>
-            </thead>
-            <tbody>
-                {% for m in modules %}
-                <tr>
-                    <td>{{ m.icon }} <strong>{{ m.title }}</strong><br><span class="muted">{{ m.id }} · v{{ m.version or '—' }}</span></td>
-                    <td>{{ m.description or '—' }}</td>
-                    <td>{{ m.tick_seconds }}s</td>
-                    <td>{{ 'sí' if m.requires_internet else 'no' }}</td>
-                    <td>
-                        {% if m.is_valid %}
-                            <span class="badge badge-running">válido</span>
-                        {% else %}
-                            <span class="badge badge-error" title="{{ m.error_message }}">inválido</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% if not m.is_valid and m.error_message %}
-                <tr class="error-detail">
-                    <td colspan="5">⚠ {{ m.error_message }}</td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr><th></th><th>Módulo</th><th>Descripción</th><th>Tick</th><th>Internet</th><th>Estado</th></tr>
+                </thead>
+                <tbody>
+                    {% for m in modules %}
+                    <tr>
+                        <td class="table-icon-cell">{{ m.icon }}</td>
+                        <td>
+                            <strong>{{ m.title }}</strong><br>
+                            <span class="panel-muted">{{ m.id }} · v{{ m.version or '—' }}</span>
+                        </td>
+                        <td>{{ m.description or '—' }}</td>
+                        <td>{{ m.tick_seconds }}s</td>
+                        <td>{{ 'sí' if m.requires_internet else 'no' }}</td>
+                        <td>
+                            {% if m.is_valid %}
+                                <span class="badge text-bg-success">válido</span>
+                            {% else %}
+                                <span class="badge text-bg-danger" title="{{ m.error_message }}">inválido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if not m.is_valid and m.error_message %}
+                    <tr>
+                        <td colspan="6" class="text-danger small">⚠ {{ m.error_message }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p class="muted">No se encontró ningún módulo en <code>modules/</code>.</p>
+        <p class="panel-muted mb-0">No se encontró ningún módulo en <code>modules/</code>.</p>
     {% endif %}
-</section>
+</div>
 {% endblock %}

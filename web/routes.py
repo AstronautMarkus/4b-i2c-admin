@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+import psutil
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from core import db, scanner
@@ -6,12 +9,39 @@ from core.lcd_loop import get_status
 bp = Blueprint("web", __name__)
 
 
+@bp.app_context_processor
+def inject_nav_context():
+    return {
+        "nav_status": get_status(),
+        # interval > 0 hace una medición propia y aislada: no interfiere con el
+        # cache de interval=None que usa el módulo 'hardware' en el hilo del LCD.
+        "sidebar_hw": {
+            "cpu": round(psutil.cpu_percent(interval=0.05)),
+            "ram": round(psutil.virtual_memory().percent),
+        },
+    }
+
+
 @bp.get("/")
 def index():
+    playlist = db.get_active_playlist()
+    modules = db.list_modules()
+
+    valid_count = sum(1 for m in modules if m["is_valid"])
+    invalid_count = len(modules) - valid_count
+
+    duration_by_title = defaultdict(int)
+    for entry in playlist:
+        duration_by_title[entry["title"]] += entry["duration_seconds"]
+
     return render_template(
         "index.html",
-        status=get_status(),
-        playlist=db.get_active_playlist(),
+        playlist=playlist,
+        modules=modules,
+        valid_count=valid_count,
+        invalid_count=invalid_count,
+        duration_chart=list(duration_by_title.items()),
+        validity_chart=[["Válidos", valid_count], ["Inválidos", invalid_count]],
     )
 
 
