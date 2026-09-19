@@ -122,5 +122,15 @@ def run_loop(stop_event):
                 break
             _run_entry(entry, display, stop_event, version_at_start)
 
-    display.clear()
+    _shutdown_screen(display)
+
+
+def _shutdown_screen(display):
+    """Avisa que se está apagando y, recién después, limpia la pantalla de verdad."""
     display.write_lines("Shutting down...", "")
+    time.sleep(1)
+    try:
+        display.clear()
+        logger.info("Pantalla LCD limpiada, apagando el loop.")
+    except Exception:
+        logger.exception("No se pudo limpiar la pantalla LCD al apagar.")
