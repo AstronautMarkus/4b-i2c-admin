@@ -4,7 +4,7 @@ import threading
 import time
 
 from core import db, registry, scanner
-from core.config import WAITING_POLL_SECONDS, WEB_PORT
+from core.config import WAITING_SCROLL_SECONDS, WEB_PORT
 from core.lcd_iface import get_lcd_backend
 from core.module_base import ModuleContext
 
@@ -43,10 +43,26 @@ def _show_boot_screen(display, stop_event):
 
 
 def _show_waiting_screen(display, stop_event, ip):
+    """
+    Línea 1 fija ("Esperando config"), línea 2 en scroll horizontal continuo
+    con la IP:puerto. Se queda acá adentro (sin reiniciar el bucle) hasta que
+    cambie la configuración publicada o se pida apagar el proceso.
+    """
     _set_status(state="waiting", current_module=None)
     display.clear()
-    display.write_lines("Esperando config", f"{ip}:{WEB_PORT}"[:16])
-    stop_event.wait(WAITING_POLL_SECONDS)
+
+    line1 = "Esperando config"
+    message = f"{ip}:{WEB_PORT}".ljust(16) + "   "  # espacio de separación antes de repetir
+    period = len(message)
+    buffer = message * 3  # suficiente margen para que cualquier ventana de 16 caiga adentro
+
+    version_at_start = db.get_config_version()
+    offset = 0
+    while not stop_event.is_set() and db.get_config_version() == version_at_start:
+        start = offset % period
+        display.write_lines(line1, buffer[start:start + 16])
+        offset += 1
+        stop_event.wait(WAITING_SCROLL_SECONDS)
 
 
 def _run_entry(entry, display, stop_event, version_at_start):

@@ -14,7 +14,7 @@ function makePlaylistRow(moduleId, title, icon, duration) {
     li.className = "playlist-row";
     li.dataset.moduleId = moduleId;
     li.innerHTML = `
-        <span class="drag-handle"><i class="bi bi-grip-vertical"></i></span>
+        <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
         <span class="row-icon">${icon || ""}</span>
         <span class="row-title">${title}</span>
         <input type="hidden" name="module_id" value="${moduleId}">
@@ -22,7 +22,7 @@ function makePlaylistRow(moduleId, title, icon, duration) {
             <input type="number" name="duration_seconds" min="1" value="${duration}" required> s
         </label>
         <button type="button" class="btn btn-sm btn-outline-secondary" data-action="remove" title="Quitar">
-            <i class="bi bi-x-lg"></i>
+            <i class="fas fa-xmark"></i>
         </button>
     `;
     return li;

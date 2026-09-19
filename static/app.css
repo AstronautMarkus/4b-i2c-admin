@@ -1,83 +1,4 @@
-:root {
-    color-scheme: light;
-    --sidebar-bg: #1c2333;
-    --sidebar-bg-active: #262f45;
-    --sidebar-text: #aab2c5;
-    --sidebar-text-active: #ffffff;
-    --topbar-bg: #2a78d6;
-    --page-bg: #f4f6f9;
-    --card-bg: #ffffff;
-    --border: #e3e6ec;
-    --text-primary: #1f2430;
-    --text-secondary: #6b7280;
-
-    /* paleta categórica validada (dataviz skill), orden fijo */
-    --series-blue: #2a78d6;
-    --series-orange: #eb6834;
-    --series-aqua: #1baf7a;
-    --series-yellow: #eda100;
-    --series-magenta: #e87ba4;
-
-    --status-good: #0ca30c;
-    --status-warning: #fab219;
-    --status-critical: #d03b3b;
-}
-
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--page-bg);
-    color: var(--text-primary);
-}
-
-.app-shell {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* ---------- Sidebar ---------- */
-
-.sidebar {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--sidebar-bg);
-    color: var(--sidebar-text);
-    min-height: 100vh;
-}
-
-.sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 1.1rem 1.1rem;
-    color: #fff;
-    font-weight: 700;
-    font-size: 1.05rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: #fff;
-    font-weight: 700;
-}
-
-.sidebar-status {
-    padding: 0.9rem 1.1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.82rem;
-}
-
-.sidebar-status-line {
-    color: var(--sidebar-text);
-    margin-top: 0.15rem;
-}
-
-.sidebar-status-line i { width: 1.1rem; display: inline-block; }
+/* Complementos propios sobre SB Admin (StartBootstrap) - cosas que esa hoja no trae */
 
 .status-dot {
     width: 10px;
@@ -86,119 +7,12 @@ body {
     display: inline-block;
 }
 
-.status-dot-on { background: var(--status-good); box-shadow: 0 0 0 3px rgba(12, 163, 12, 0.2); }
-.status-dot-off { background: var(--status-warning); box-shadow: 0 0 0 3px rgba(250, 178, 25, 0.2); }
+.status-dot-on { background: #0ca30c; box-shadow: 0 0 0 3px rgba(12, 163, 12, 0.25); }
+.status-dot-off { background: #fab219; box-shadow: 0 0 0 3px rgba(250, 178, 25, 0.25); }
 
-.sidebar-section-label {
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
-    color: #5b647d;
-    padding: 1rem 1.1rem 0.3rem;
-}
+.table-icon-cell { width: 2.2rem; text-align: center; }
 
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar-nav a {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.6rem 1.1rem;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    font-size: 0.92rem;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-nav a i { width: 1.1rem; text-align: center; }
-
-.sidebar-nav a:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: #fff;
-}
-
-.sidebar-nav a.active {
-    background: var(--sidebar-bg-active);
-    color: #fff;
-    border-left-color: var(--series-blue);
-}
-
-/* ---------- Topbar ---------- */
-
-.main-col {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.topbar {
-    background: var(--topbar-bg);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.7rem 1.25rem;
-}
-
-.topbar-title {
-    font-weight: 600;
-    flex: 1;
-}
-
-.topbar-chip {
-    background: rgba(255, 255, 255, 0.16);
-    border-radius: 999px;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.85rem;
-}
-
-.content-area {
-    padding: 1.5rem;
-}
-
-/* ---------- Stat cards ---------- */
-
-.stat-card {
-    border-radius: 10px;
-    padding: 1.1rem 1.3rem;
-    color: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 110px;
-}
-
-.stat-card .stat-icon { font-size: 1.6rem; opacity: 0.85; }
-.stat-card .stat-label { font-size: 0.85rem; opacity: 0.9; margin-top: 0.4rem; }
-.stat-card .stat-value { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
-
-.stat-card-blue { background: var(--series-blue); }
-.stat-card-aqua { background: var(--series-aqua); }
-.stat-card-orange { background: var(--series-orange); }
-.stat-card-red { background: var(--status-critical); }
-
-/* ---------- Panels ---------- */
-
-.panel {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.1rem 1.3rem;
-    margin-bottom: 1.25rem;
-}
-
-.panel h2 {
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: 0.9rem;
-}
-
-.panel-muted { color: var(--text-secondary); font-size: 0.88rem; }
+/* ---------- Donuts ---------- */
 
 .chart-wrap { position: relative; height: 220px; }
 
@@ -218,11 +32,6 @@ body {
     margin-right: 0.35rem;
 }
 
-/* ---------- Tables ---------- */
-
-.table > :not(caption) > * > * { color: var(--text-primary); }
-.table-icon-cell { width: 2.2rem; text-align: center; }
-
 /* ---------- Playlist editor ---------- */
 
 .playlist-rows {
@@ -236,15 +45,14 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 0.55rem 0.5rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--card-bg);
+    border-bottom: 1px solid #e3e6ec;
 }
 
 .playlist-row.sortable-ghost { opacity: 0.4; }
 
 .drag-handle {
     cursor: grab;
-    color: var(--text-secondary);
+    color: #6b7280;
 }
 
 .row-icon { width: 1.6rem; text-align: center; font-size: 1.1rem; }
@@ -252,7 +60,7 @@ body {
 
 .row-duration input {
     width: 4.5rem;
-    border: 1px solid var(--border);
+    border: 1px solid #ced4da;
     border-radius: 6px;
     padding: 0.25rem 0.4rem;
 }
@@ -265,13 +73,9 @@ body {
 }
 
 .module-card {
-    border: 1px solid var(--border);
+    border: 1px solid #e3e6ec;
     border-radius: 8px;
     padding: 0.85rem;
 }
 
 .module-card-title { font-weight: 600; margin-bottom: 0.25rem; }
-
-@media (max-width: 767.98px) {
-    .content-area { padding: 1rem; }
-}

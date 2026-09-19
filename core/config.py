@@ -12,6 +12,6 @@ WEB_PORT = 6767
 # "auto" | "real" | "console" - ver core/lcd_iface.py
 LCD_BACKEND = os.environ.get("LCD_BACKEND", "auto")
 
-WAITING_POLL_SECONDS = 2
+WAITING_SCROLL_SECONDS = 0.3  # velocidad del scroll horizontal de la pantalla "esperando config"
 HTTP_TIMEOUT = 5
 WEATHER_CACHE_SECONDS = 900

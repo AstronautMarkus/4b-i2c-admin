@@ -1,63 +1,117 @@
 <!doctype html>
-<html lang="es" data-bs-theme="light">
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Dashboard — 4B I2C Admin{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23127a3d%22/><rect x=%229%22 y=%229%22 width=%2214%22 height=%2214%22 rx=%222%22 fill=%22%23e6f4ea%22/></svg>">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- SB Admin (StartBootstrap, MIT) servido desde su propio repo vía jsdelivr, pineado a v7.0.7 -->
+    <link href="https://cdn.jsdelivr.net/gh/StartBootstrap/startbootstrap-sb-admin@v7.0.7/dist/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
-<body>
-<div class="app-shell">
-    <aside class="sidebar d-none d-md-flex flex-column">
-        {% include "_sidebar_content.html" %}
-    </aside>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3 d-flex align-items-center gap-2" href="{{ url_for('web.index') }}">
+            {% include "_pi_icon.html" %} 4B I2C Admin
+        </a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
 
-    <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="sidebarOffcanvas">
-        <div class="offcanvas-header">
-            <span class="brand"><span class="brand-icon">{% include "_pi_icon.html" %}</span>4B I2C Admin</span>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        <span class="ms-auto d-none d-md-inline-block text-white-50 small pe-3">
+            <i class="fas fa-network-wired me-1"></i>{{ nav_status.ip or '—' }}:6767
+        </span>
+
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-gear fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><h6 class="dropdown-header">{{ nav_status.ip or '—' }}:6767</h6></li>
+                    <li>
+                        <form method="post" action="{{ url_for('web.modules_rescan') }}">
+                            <button type="submit" class="dropdown-item"><i class="fas fa-rotate fa-fw me-1"></i> Re-escanear módulos</button>
+                        </form>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{{ url_for('web.factory_reset') }}" data-confirm="¿Seguro que querés borrar la configuración actual?">
+                            <button type="submit" class="dropdown-item text-danger"><i class="fas fa-arrow-rotate-left fa-fw me-1"></i> Reset de fábrica</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Panel</div>
+                        <a class="nav-link {{ '' if request.endpoint == 'web.index' else 'collapsed' }}" href="{{ url_for('web.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-gauge-high"></i></div>
+                            Estado
+                        </a>
+                        <a class="nav-link {{ '' if request.endpoint == 'web.modules_list' else 'collapsed' }}" href="{{ url_for('web.modules_list') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-cubes"></i></div>
+                            Módulos
+                        </a>
+                        <a class="nav-link {{ '' if request.endpoint == 'web.playlist_editor' else 'collapsed' }}" href="{{ url_for('web.playlist_editor') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list-ol"></i></div>
+                            Playlist
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="status-dot status-dot-{{ 'on' if nav_status.state == 'running' else 'off' }}"></span>
+                        <strong>{{ 'Activo' if nav_status.state == 'running' else 'En espera' }}</strong>
+                    </div>
+                    <div class="small"><i class="fas fa-microchip fa-fw"></i> CPU {{ sidebar_hw.cpu }}%</div>
+                    <div class="small"><i class="fas fa-memory fa-fw"></i> RAM {{ sidebar_hw.ram }}%</div>
+                </div>
+            </nav>
         </div>
-        <div class="offcanvas-body p-0">
-            {% include "_sidebar_content.html" %}
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">{% block page_title %}Dashboard{% endblock %}</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active">{% block breadcrumb %}Estado{% endblock %}</li>
+                    </ol>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+
+            <footer class="py-4 bg-light mt-auto border-top">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small text-muted">
+                        <div>4B I2C Admin</div>
+                        <div>{{ nav_status.ip or '—' }}:6767</div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
 
-    <div class="main-col">
-        <header class="topbar">
-            <button class="btn btn-link text-white d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
-                <i class="bi bi-list fs-3"></i>
-            </button>
-            <span class="topbar-title">{% block page_title %}Dashboard{% endblock %}</span>
-            <span class="topbar-chip">
-                <i class="bi bi-hdd-network"></i>
-                {{ nav_status.ip or '—' }}:6767
-            </span>
-        </header>
-
-        <main class="container-fluid content-area">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            {% block content %}{% endblock %}
-        </main>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="{{ url_for('static', filename='app.js') }}"></script>
-{% block scripts %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/StartBootstrap/startbootstrap-sb-admin@v7.0.7/dist/js/scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,60 +1,65 @@
 {% extends "base.html" %}
 {% block title %}Playlist — 4B I2C Admin{% endblock %}
 {% block page_title %}Playlist{% endblock %}
+{% block breadcrumb %}Playlist{% endblock %}
 
 {% block content %}
 <form id="playlist-form" method="post" action="{{ url_for('web.playlist_publish') }}">
-    <div class="panel">
-        <h2>Secuencia a mostrar</h2>
-        <p class="panel-muted">Arrastrá para reordenar. Duración libre por entrada, y un módulo puede repetirse varias veces.</p>
+    <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-list-ol me-1"></i> Secuencia a mostrar</div>
+        <div class="card-body">
+            <p class="text-muted">Arrastrá para reordenar. Duración libre por entrada, y un módulo puede repetirse varias veces.</p>
 
-        <ol id="playlist-rows" class="playlist-rows">
-            {% for entry in playlist %}
-            <li class="playlist-row" data-module-id="{{ entry.module_id }}">
-                <span class="drag-handle"><i class="bi bi-grip-vertical"></i></span>
-                <span class="row-icon">{{ entry.icon }}</span>
-                <span class="row-title">{{ entry.title }}</span>
-                <input type="hidden" name="module_id" value="{{ entry.module_id }}">
-                <label class="row-duration">
-                    <input type="number" name="duration_seconds" min="1" value="{{ entry.duration_seconds }}" required> s
-                </label>
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-action="remove" title="Quitar">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </li>
-            {% endfor %}
-        </ol>
-        <p class="panel-muted" id="empty-hint" {{ 'hidden' if playlist }}>Todavía no agregaste ningún módulo. Elegí uno de la librería de abajo.</p>
+            <ol id="playlist-rows" class="playlist-rows">
+                {% for entry in playlist %}
+                <li class="playlist-row" data-module-id="{{ entry.module_id }}">
+                    <span class="drag-handle"><i class="fas fa-grip-vertical"></i></span>
+                    <span class="row-icon">{{ entry.icon }}</span>
+                    <span class="row-title">{{ entry.title }}</span>
+                    <input type="hidden" name="module_id" value="{{ entry.module_id }}">
+                    <label class="row-duration">
+                        <input type="number" name="duration_seconds" min="1" value="{{ entry.duration_seconds }}" required> s
+                    </label>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-action="remove" title="Quitar">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </li>
+                {% endfor %}
+            </ol>
+            <p class="text-muted" id="empty-hint" {{ 'hidden' if playlist }}>Todavía no agregaste ningún módulo. Elegí uno de la librería de abajo.</p>
 
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-cloud-upload"></i> Publicar playlist
-        </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-cloud-arrow-up"></i> Publicar playlist
+            </button>
+        </div>
     </div>
 </form>
 
-<div class="panel">
-    <h2>Librería de módulos</h2>
-    <div class="module-grid">
-        {% for m in modules %}
-            {% if m.is_valid %}
-            <div class="module-card">
-                <div class="module-card-title">{{ m.icon }} {{ m.title }}</div>
-                <p class="panel-muted mb-2">{{ m.description or '' }}</p>
-                <button type="button" class="btn btn-sm btn-outline-primary add-module-btn"
-                        data-module-id="{{ m.id }}"
-                        data-title="{{ m.title }}"
-                        data-icon="{{ m.icon }}"
-                        data-default-duration="5">
-                    <i class="bi bi-plus-lg"></i> Agregar
-                </button>
-            </div>
-            {% endif %}
-        {% else %}
-            <p class="panel-muted">No hay módulos descubiertos todavía.</p>
-        {% endfor %}
+<div class="card mb-4">
+    <div class="card-header"><i class="fas fa-cubes me-1"></i> Librería de módulos</div>
+    <div class="card-body">
+        <div class="module-grid">
+            {% for m in modules %}
+                {% if m.is_valid %}
+                <div class="module-card">
+                    <div class="module-card-title">{{ m.icon }} {{ m.title }}</div>
+                    <p class="text-muted small mb-2">{{ m.description or '' }}</p>
+                    <button type="button" class="btn btn-sm btn-outline-primary add-module-btn"
+                            data-module-id="{{ m.id }}"
+                            data-title="{{ m.title }}"
+                            data-icon="{{ m.icon }}"
+                            data-default-duration="5">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+                {% endif %}
+            {% else %}
+                <p class="text-muted">No hay módulos descubiertos todavía.</p>
+            {% endfor %}
+        </div>
+        {% if modules and not modules|selectattr('is_valid')|list %}
+            <p class="text-muted mt-2 mb-0">Ningún módulo válido por ahora — revisá <a href="{{ url_for('web.modules_list') }}">Módulos</a>.</p>
+        {% endif %}
     </div>
-    {% if modules and not modules|selectattr('is_valid')|list %}
-        <p class="panel-muted mt-2 mb-0">Ningún módulo válido por ahora — revisá <a href="{{ url_for('web.modules_list') }}">Módulos</a>.</p>
-    {% endif %}
 </div>
 {% endblock %}

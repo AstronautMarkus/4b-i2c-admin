@@ -1,54 +1,56 @@
 {% extends "base.html" %}
 {% block title %}Módulos — 4B I2C Admin{% endblock %}
 {% block page_title %}Módulos{% endblock %}
+{% block breadcrumb %}Módulos{% endblock %}
 
 {% block content %}
-<div class="panel">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Módulos descubiertos</h2>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-cubes me-1"></i> Módulos descubiertos</span>
         <form method="post" action="{{ url_for('web.modules_rescan') }}">
             <button type="submit" class="btn btn-primary btn-sm">
-                <i class="bi bi-arrow-repeat"></i> Re-escanear
+                <i class="fas fa-rotate"></i> Re-escanear
             </button>
         </form>
     </div>
-
-    {% if modules %}
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr><th></th><th>Módulo</th><th>Descripción</th><th>Tick</th><th>Internet</th><th>Estado</th></tr>
-                </thead>
-                <tbody>
-                    {% for m in modules %}
-                    <tr>
-                        <td class="table-icon-cell">{{ m.icon }}</td>
-                        <td>
-                            <strong>{{ m.title }}</strong><br>
-                            <span class="panel-muted">{{ m.id }} · v{{ m.version or '—' }}</span>
-                        </td>
-                        <td>{{ m.description or '—' }}</td>
-                        <td>{{ m.tick_seconds }}s</td>
-                        <td>{{ 'sí' if m.requires_internet else 'no' }}</td>
-                        <td>
-                            {% if m.is_valid %}
-                                <span class="badge text-bg-success">válido</span>
-                            {% else %}
-                                <span class="badge text-bg-danger" title="{{ m.error_message }}">inválido</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% if not m.is_valid and m.error_message %}
-                    <tr>
-                        <td colspan="6" class="text-danger small">⚠ {{ m.error_message }}</td>
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p class="panel-muted mb-0">No se encontró ningún módulo en <code>modules/</code>.</p>
-    {% endif %}
+    <div class="card-body">
+        {% if modules %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr><th></th><th>Módulo</th><th>Descripción</th><th>Tick</th><th>Internet</th><th>Estado</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for m in modules %}
+                        <tr>
+                            <td class="table-icon-cell">{{ m.icon }}</td>
+                            <td>
+                                <strong>{{ m.title }}</strong><br>
+                                <span class="text-muted small">{{ m.id }} · v{{ m.version or '—' }}</span>
+                            </td>
+                            <td>{{ m.description or '—' }}</td>
+                            <td>{{ m.tick_seconds }}s</td>
+                            <td>{{ 'sí' if m.requires_internet else 'no' }}</td>
+                            <td>
+                                {% if m.is_valid %}
+                                    <span class="badge bg-success">válido</span>
+                                {% else %}
+                                    <span class="badge bg-danger" title="{{ m.error_message }}">inválido</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if not m.is_valid and m.error_message %}
+                        <tr>
+                            <td colspan="6" class="text-danger small">⚠ {{ m.error_message }}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No se encontró ningún módulo en <code>modules/</code>.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
